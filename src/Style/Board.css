@@ -1,0 +1,9 @@
+.board tr td{
+  border:1px solid #000000;
+}
+.circle-white{
+  color:#ffffff!important;
+}
+.circle-black{
+  color:#000000!important;
+}
