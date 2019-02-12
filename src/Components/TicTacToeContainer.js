@@ -3,7 +3,12 @@ import Board from './TicTacToeComponents/Board'
 import GameState from './TicTacToeComponents/GameState'
 import {assign, find, reject, each} from 'lodash'
 import Modal from '@material-ui/core/Modal';
+import openSocket from 'socket.io-client';
+import {url} from '../Global/config'
+import dotenv from 'dotenv'
+dotenv.config()
 
+const socket = openSocket(process.env.SOCKETURL);
 class TicTacToeContainer extends Component {
     //0 means nothing, 2 means white and 1 means black
 
@@ -47,16 +52,17 @@ class TicTacToeContainer extends Component {
 
         })
 
-
+        socket.emit('tick',tempPlayState)
 
         console.log(this.evaluateGame(tempPlayState, turn, row, column));
         if(this.evaluateGame(tempPlayState, turn, row, column)){
           //evaluate game
+          let gameOverState = assign(gameState,{finished:true, winning:turn})
           this.setState({
-            gameState: assign(gameState,{finished:true, winning:turn}),
+            gameState: gameOverState,
 
           })
-
+          socket.emit('gameOver',gameOverState)
 
         }else{
           this.changeTurn()
@@ -145,6 +151,7 @@ class TicTacToeContainer extends Component {
     }
 
     reset(){
+
       this.setState({
         turn:1,
         playState:[
@@ -167,11 +174,28 @@ class TicTacToeContainer extends Component {
              open={gameState.finished}
 
            >
-            <GameState reset={this.reset}/>
+            <GameState reset={() => {
+                                     socket.emit('reset')
+                                     this.reset()
+                                    }
+                             }
+            />
           </Modal>
           <Board playState = {playState} onBoxClicked = {this.evaluateInput}/>
         </div>
       );
+    }
+    componentDidMount(){
+      socket.on('tick-on',(playState) => {
+        console.log(playState)
+        this.setState({playState:playState})
+      })
+      socket.on('applyGameOver',(gameState) => {
+        this.setState({ gameState:gameState})
+      })
+      socket.on('applyReset',() => {
+        this.reset()
+      })
     }
   }
 
