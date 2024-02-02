@@ -11,22 +11,16 @@ import '@fortawesome/fontawesome-free'
 import ApolloClient from "apollo-boost";
 import dotenv from 'dotenv'
 import { ApolloProvider } from "react-apollo";
+import TicTacToeContainer from './Components/TicTacToeContainer';
 
 dotenv.config()
 
-const client = new ApolloClient({
-  uri: process.env.GRAPHQLURL
-});
+
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <ApolloProvider client={client}>
-          <RoomContainer/>
-        </ApolloProvider>
-
-
-
+        <TicTacToeContainer/>
       </div>
     );
   }

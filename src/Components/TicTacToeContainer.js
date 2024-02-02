@@ -4,11 +4,10 @@ import GameState from './TicTacToeComponents/GameState'
 import {assign, find, reject, each} from 'lodash'
 import Modal from '@material-ui/core/Modal';
 import openSocket from 'socket.io-client';
-import {url} from '../Global/config'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const socket = openSocket(process.env.SOCKETURL);
+const socket = openSocket(process.env.BACKEND_URL);
 class TicTacToeContainer extends Component {
     //0 means nothing, 2 means white and 1 means black
 
@@ -79,7 +78,7 @@ class TicTacToeContainer extends Component {
 
       // find other opponents element
       let columnWise = reject(playState[row], (value) => {return value === turn})
-      console.log(columnWise)
+
       if(columnWise.length === 0){
         finish = true
       }
@@ -113,11 +112,10 @@ class TicTacToeContainer extends Component {
         let zeroFound = 0
 
         each(playState, (row) =>{
-          console.log(row)
           zeroFound = find(row, (value) =>{
             return value == 0
           })
-          console.log("zero",zeroFound)
+
           // to prevent misinterpretation
           if(zeroFound !== undefined)
             return false
@@ -187,7 +185,6 @@ class TicTacToeContainer extends Component {
     }
     componentDidMount(){
       socket.on('tick-on',(playState) => {
-        console.log(playState)
         this.setState({playState:playState})
       })
       socket.on('applyGameOver',(gameState) => {
