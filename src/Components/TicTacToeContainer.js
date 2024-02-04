@@ -5,9 +5,10 @@ import {assign, find, reject, each} from 'lodash'
 import Modal from '@material-ui/core/Modal';
 import openSocket from 'socket.io-client';
 import dotenv from 'dotenv'
+import Typography from '@material-ui/core/Typography';
 dotenv.config()
 
-const socket = openSocket(process.env.BACKEND_URL);
+const socket = openSocket(process.env.BACKEND_URL) ;
 class TicTacToeContainer extends Component {
     //0 means nothing, 2 means white and 1 means black
 
@@ -16,12 +17,10 @@ class TicTacToeContainer extends Component {
       this.state = {
         turn:1,
         playState:[
-
-                    [0,0,0],
-                    [0,0,0],
-                    [0,0,0],
-
-                  ],
+          [0,0,0],
+          [0,0,0],
+          [0,0,0],
+        ],
         gameState:{finished: false, winning:0}// if empty then no one winning yet
       };
 
@@ -128,15 +127,7 @@ class TicTacToeContainer extends Component {
         }
       }
 
-
-
-
       return finish
-    }
-
-
-    flipCoin(row,column){
-
     }
 
     changeTurn(){
@@ -165,7 +156,7 @@ class TicTacToeContainer extends Component {
     render() {
       const {playState, gameState} = {...this.state}
       return (
-        <div style={{paddingTop:'20%'}}>
+        <div className="top-container">
           <Modal
              aria-labelledby="simple-modal-title"
              aria-describedby="simple-modal-description"
@@ -173,13 +164,21 @@ class TicTacToeContainer extends Component {
 
            >
             <GameState reset={() => {
-                                     socket.emit('reset')
-                                     this.reset()
-                                    }
-                             }
+                  socket.emit('reset')
+                  this.reset()
+                }
+              }
             />
           </Modal>
+
           <Board playState = {playState} onBoxClicked = {this.evaluateInput}/>
+          <h1>
+            YOUR TURN:
+          </h1>
+          <Typography variant="h1" component="h1" >
+            {this.state.turn === 1?'X':'O' }
+          </Typography>
+          
         </div>
       );
     }

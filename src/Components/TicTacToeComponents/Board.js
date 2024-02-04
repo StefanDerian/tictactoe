@@ -1,6 +1,5 @@
 
 import React from 'react'
-import Box from './Box'
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -16,8 +15,7 @@ const styles = theme => ({
     padding: theme.spacing.unit * 2,
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    height: 140,
-    width: 100
+    height: 140
   },
 });
 
@@ -26,7 +24,7 @@ function Board(props){
     let divKey = 0;
     return (
 
-        <div>
+        <div className="board">
 
 
             {playState.map((row,rowIndex) => {
@@ -40,13 +38,11 @@ function Board(props){
                   key = {divKey}
                 >
                     {row.map((column,columnIndex) =>
-                        <Grid item xs={4} md={'auto'} lg ={'auto'} key = {rowIndex.toString()  + columnIndex.toString()}>
-
-
+                        <Grid item   lg ={'auto'} key = {rowIndex.toString()  + columnIndex.toString()}>
                               {column == 0 &&
                                 <Paper onClick = {() => {onBoxClicked(rowIndex,columnIndex)}} style ={BoxStyle}>
                                   <Typography variant="h5" component="h3" style ={Symbol}>
-                                    
+          
                                   </Typography>
                                 </Paper>
                               }
