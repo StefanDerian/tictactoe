@@ -60,9 +60,6 @@ function Board(props){
                                  </Typography>
                                 </Paper>
                               }
-
-
-
                         </Grid>
 
                     )}

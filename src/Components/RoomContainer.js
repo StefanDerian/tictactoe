@@ -10,7 +10,7 @@ import {RoomsContainer, RoomItem as RoomItemStyle} from '../Style/Room'
 
 dotenv.config()
 
-const socket = openSocket(process.env.SOCKETURL);
+
 
 class RoomContainer extends Component {
   constructor(props){

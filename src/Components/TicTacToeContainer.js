@@ -3,12 +3,14 @@ import Board from './TicTacToeComponents/Board'
 import GameState from './TicTacToeComponents/GameState'
 import {assign, find, reject, each} from 'lodash'
 import Modal from '@material-ui/core/Modal';
-import openSocket from 'socket.io-client';
+import io from 'socket.io-client';
 import dotenv from 'dotenv'
 import Typography from '@material-ui/core/Typography';
 dotenv.config()
 
-const socket = openSocket(process.env.BACKEND_URL) ;
+const socket = io({path:process.env.BACKEND_URL, reconnection: false, autoConnect: false})  ;
+
+
 class TicTacToeContainer extends Component {
     //0 means nothing, 2 means white and 1 means black
 
@@ -37,7 +39,7 @@ class TicTacToeContainer extends Component {
 
       let { playState, turn , gameState} = {...this.state}
       let tempPlayState = [...playState]
-      let path = [] // contains the data of the path taken, each steps is the rowIndex and columnIndex Separately
+      
 
       //put the symbol based on the turn number
       if(!gameState.finished){
@@ -50,9 +52,11 @@ class TicTacToeContainer extends Component {
 
         })
 
-        socket.emit('tick',tempPlayState)
 
-        console.log(this.evaluateGame(tempPlayState, turn, row, column));
+        if(socket.connected)
+          socket.emit('tick',tempPlayState)
+
+        
         if(this.evaluateGame(tempPlayState, turn, row, column)){
           //evaluate game
           let gameOverState = assign(gameState,{finished:true, winning:turn})
@@ -60,7 +64,8 @@ class TicTacToeContainer extends Component {
             gameState: gameOverState,
 
           })
-          socket.emit('gameOver',gameOverState)
+          if(socket.connected)
+            socket.emit('gameOver',gameOverState)
 
         }else{
           this.changeTurn()
@@ -164,7 +169,8 @@ class TicTacToeContainer extends Component {
 
            >
             <GameState reset={() => {
-                  socket.emit('reset')
+                  if(socket.connected)
+                    socket.emit('reset')
                   this.reset()
                 }
               }
@@ -183,15 +189,18 @@ class TicTacToeContainer extends Component {
       );
     }
     componentDidMount(){
-      socket.on('tick-on',(playState) => {
-        this.setState({playState:playState})
-      })
-      socket.on('applyGameOver',(gameState) => {
-        this.setState({ gameState:gameState})
-      })
-      socket.on('applyReset',() => {
-        this.reset()
-      })
+      if(socket.connected){
+        socket.on('tick-on',(playState) => {
+          this.setState({playState:playState})
+        })
+        socket.on('applyGameOver',(gameState) => {
+          this.setState({ gameState:gameState})
+        })
+        socket.on('applyReset',() => {
+          this.reset()
+        })
+      }
+      
     }
   }
 
